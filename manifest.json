@@ -14,13 +14,13 @@
     "*://www.youtube.com/*"
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/popup.html",
     "default_title": "YouTube Watch Later Cleaner"
   },
   "content_scripts": [
     {
       "matches": ["*://www.youtube.com/playlist?list=WL*"],
-      "js": ["content.js"],
+      "js": ["src/content.js"],
       "run_at": "document_idle"
     }
   ],
