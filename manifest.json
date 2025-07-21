@@ -5,6 +5,12 @@
   "description": "Clean up your YouTube Watch Later playlist by removing videos individually or in bulk with one click. Fast, safe, and user-friendly.",
   "author": "AI Consy",
   "homepage_url": "https://aiconsy.com",
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "permissions": [
     "activeTab",
     "scripting",
@@ -19,13 +25,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://www.youtube.com/playlist?list=WL*"],
+      "matches": [
+        "*://www.youtube.com/playlist?list=WL*",
+        "*://www.youtube.com/feed/history*",
+        "*://www.youtube.com/feed/watch_later*"
+      ],
       "js": ["src/content.js"],
       "run_at": "document_idle"
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline';"
   },
   "minimum_chrome_version": "88"
 } 

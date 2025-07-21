@@ -1,14 +1,28 @@
 // Content script for YouTube Watch Later Cleaner by AI Consy
 
-// Listen for messages from the injected script
-window.addEventListener('message', function(event) {
-  if (event.source !== window) return;
-  
-  if (event.data.type === 'CLEANING_PROGRESS' || 
-      event.data.type === 'CLEANING_COMPLETE' || 
-      event.data.type === 'CLEANING_STOPPED') {
-    // Forward message to popup
-    chrome.runtime.sendMessage(event.data);
+let isCleaning = false;
+let shouldStop = false;
+let removedCount = 0;
+let totalVideos = 0;
+
+// Listen for messages from popup
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  if (message.type === 'GET_VIDEO_COUNT') {
+    const count = getVideoCount();
+    sendResponse({ count: count });
+    return true;
+  } else if (message.type === 'START_BULK_REMOVAL') {
+    startBulkRemoval();
+    sendResponse({ success: true });
+    return true;
+  } else if (message.type === 'REMOVE_SINGLE_VIDEO') {
+    removeSingleVideo();
+    sendResponse({ success: true });
+    return true;
+  } else if (message.type === 'STOP_CLEANING') {
+    shouldStop = true;
+    sendResponse({ success: true });
+    return true;
   }
 });
 
@@ -57,7 +71,7 @@ async function removeVideoSafely(video) {
     menuButton.click();
     
     // Wait for the menu to appear and find the remove option
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     const removeButton = 
       // Try to find by text content first (most reliable)
@@ -87,10 +101,11 @@ async function removeVideoSafely(video) {
     removeButton.click();
     
     // Wait for the removal to complete
-    await new Promise(resolve => setTimeout(resolve, 75));
+    await new Promise(resolve => setTimeout(resolve, 150));
     
     return true;
   } catch (error) {
+    console.error('Error removing video:', error);
     return false;
   }
 }
@@ -104,6 +119,97 @@ function getVideoCount() {
 // Function to check if we're on the Watch Later page
 function isWatchLaterPage() {
   return window.location.href.includes('youtube.com/playlist?list=WL');
+}
+
+// Start bulk removal process
+async function startBulkRemoval() {
+  if (isCleaning) return;
+  
+  isCleaning = true;
+  shouldStop = false;
+  removedCount = 0;
+  totalVideos = getVideoCount();
+  
+  if (totalVideos === 0) {
+    chrome.runtime.sendMessage({
+      type: 'ERROR',
+      error: 'No videos found to remove'
+    });
+    isCleaning = false;
+    return;
+  }
+  
+  // Send initial progress
+  chrome.runtime.sendMessage({
+    type: 'CLEANING_PROGRESS',
+    removedCount: removedCount,
+    totalVideos: totalVideos
+  });
+  
+  const videos = Array.from(document.querySelectorAll('ytd-playlist-video-renderer'));
+  
+  for (let i = 0; i < videos.length; i++) {
+    if (shouldStop) {
+      chrome.runtime.sendMessage({
+        type: 'CLEANING_STOPPED',
+        removedCount: removedCount
+      });
+      isCleaning = false;
+      return;
+    }
+    
+    const video = videos[i];
+    const success = await removeVideoSafely(video);
+    
+    if (success) {
+      removedCount++;
+      
+      // Send progress update
+      chrome.runtime.sendMessage({
+        type: 'CLEANING_PROGRESS',
+        removedCount: removedCount,
+        totalVideos: totalVideos
+      });
+      
+      // Wait a bit before next removal to avoid overwhelming YouTube
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+  }
+  
+  // Send completion message
+  chrome.runtime.sendMessage({
+    type: 'CLEANING_COMPLETE',
+    removedCount: removedCount
+  });
+  
+  isCleaning = false;
+}
+
+// Remove single video
+async function removeSingleVideo() {
+  const videos = document.querySelectorAll('ytd-playlist-video-renderer');
+  
+  if (videos.length === 0) {
+    chrome.runtime.sendMessage({
+      type: 'ERROR',
+      error: 'No videos found to remove'
+    });
+    return;
+  }
+  
+  const firstVideo = videos[0];
+  const success = await removeVideoSafely(firstVideo);
+  
+  if (success) {
+    chrome.runtime.sendMessage({
+      type: 'SINGLE_VIDEO_REMOVED'
+    });
+  } else {
+    chrome.runtime.sendMessage({
+      type: 'ERROR',
+      error: 'Failed to remove video'
+    });
+  }
 }
 
 // Add visual feedback for the extension

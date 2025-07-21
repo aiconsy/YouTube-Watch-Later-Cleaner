@@ -1,0 +1,35 @@
+{
+  "name": "youtube-watch-later-cleaner",
+  "version": "1.0.0",
+  "description": "A Chrome extension to clean up your YouTube Watch Later playlist by removing videos individually or in bulk.",
+  "main": "src/popup.js",
+  "scripts": {
+    "build": "echo 'Extension is ready to load in Chrome'",
+    "test": "echo 'Open chrome://extensions/ and load unpacked extension'",
+    "generate-icons": "node generate_icons.js"
+  },
+  "keywords": [
+    "chrome-extension",
+    "youtube",
+    "watch-later",
+    "playlist",
+    "cleaner",
+    "bulk-removal"
+  ],
+  "author": "AI Consy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiconsy/YouTube-Watch-Later-Cleaner.git"
+  },
+  "homepage": "https://aiconsy.com",
+  "bugs": {
+    "url": "https://github.com/aiconsy/YouTube-Watch-Later-Cleaner/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "canvas": "^2.11.0"
+  }
+} 

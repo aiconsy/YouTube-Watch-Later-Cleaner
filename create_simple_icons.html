@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Extension Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .icon-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background: white;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Watch Later Cleaner - Icon Generator</h1>
+    <p>Click the buttons below to download the extension icons:</p>
+    
+    <div id="iconContainer"></div>
+    
+    <button onclick="downloadAllIcons()">Download All Icons</button>
+    
+    <script>
+        const sizes = [16, 32, 48, 128];
+        
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // YouTube red background with rounded corners
+            ctx.fillStyle = '#FF0000';
+            ctx.beginPath();
+            const radius = size * 0.2;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            
+            // White play button (left side)
+            ctx.fillStyle = '#FFFFFF';
+            const playSize = size * 0.25;
+            const playX = size * 0.25;
+            const playY = size * 0.375;
+            ctx.beginPath();
+            ctx.moveTo(playX, playY);
+            ctx.lineTo(playX + playSize, playY + playSize * 0.5);
+            ctx.lineTo(playX, playY + playSize);
+            ctx.closePath();
+            ctx.fill();
+            
+            // White trash can (right side)
+            const trashX = size * 0.6;
+            const trashY = size * 0.35;
+            const trashWidth = size * 0.25;
+            const trashHeight = size * 0.3;
+            
+            // Trash can body
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(trashX, trashY, trashWidth, trashHeight);
+            
+            // Trash can lid
+            const lidWidth = trashWidth * 1.2;
+            const lidHeight = size * 0.08;
+            ctx.fillRect(trashX - (lidWidth - trashWidth) / 2, trashY - lidHeight, lidWidth, lidHeight);
+            
+            // Trash can handle
+            const handleWidth = size * 0.08;
+            const handleHeight = size * 0.12;
+            ctx.fillRect(trashX + trashWidth / 2 - handleWidth / 2, trashY - lidHeight - handleHeight, handleWidth, handleHeight);
+            
+            return canvas;
+        }
+        
+        function downloadIcon(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function createIconPreview(size) {
+            const container = document.createElement('div');
+            container.className = 'icon-preview';
+            
+            const canvas = generateIcon(size);
+            const filename = `icon${size}.png`;
+            
+            container.innerHTML = `
+                <h3>${size}x${size}</h3>
+                <canvas width="${size}" height="${size}"></canvas>
+                <br>
+                <button onclick="downloadIcon(this.parentElement.querySelector('canvas'), '${filename}')">
+                    Download ${filename}
+                </button>
+            `;
+            
+            // Copy the generated canvas to the preview
+            const previewCanvas = container.querySelector('canvas');
+            const previewCtx = previewCanvas.getContext('2d');
+            previewCtx.drawImage(canvas, 0, 0);
+            
+            return container;
+        }
+        
+        function downloadAllIcons() {
+            sizes.forEach(size => {
+                const canvas = generateIcon(size);
+                const filename = `icon${size}.png`;
+                setTimeout(() => {
+                    downloadIcon(canvas, filename);
+                }, size * 10); // Small delay to prevent browser blocking
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('iconContainer');
+            sizes.forEach(size => {
+                container.appendChild(createIconPreview(size));
+            });
+        });
+    </script>
+</body>
+</html> 
