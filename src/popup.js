@@ -74,7 +74,7 @@ async function getVideoCount() {
       updateStatus(`📊 Found ${totalVideos} videos in your Watch Later list.`, 'info');
     }
   } catch (error) {
-    console.log('Could not get video count:', error);
+    // Could not get video count - this is normal if not on Watch Later page
   }
 }
 
