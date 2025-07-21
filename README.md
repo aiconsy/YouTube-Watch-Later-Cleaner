@@ -31,7 +31,7 @@ A powerful Chrome extension by **AI Consy** that helps you clean up your YouTube
    ```
 
 2. **Generate Icons** (Required)
-   - Open `create_simple_icons.html` in your browser
+   - Open `tools/create_icons.html` in your browser
    - Click "Download All Icons" to get the required icon files
    - Place the downloaded icons in the root directory
 
@@ -129,8 +129,8 @@ YouTube-Watch-Later-Cleaner/
 │   └── SECURITY_REVIEW.md    # Security analysis
 ├── tools/
 │   └── create_icons.html     # Icon generator tool
-├── create_simple_icons.html  # Simple icon generator
-├── generate_icons.js         # Node.js icon generator
+├── tools/
+│   └── create_icons.html     # Professional icon generator
 ├── package.json              # Project metadata
 ├── README.md                 # This file
 └── LICENSE                   # MIT License
@@ -160,8 +160,7 @@ We welcome contributions! Here's how you can help:
 ```bash
 git clone https://github.com/aiconsy/YouTube-Watch-Later-Cleaner.git
 cd YouTube-Watch-Later-Cleaner
-npm install
-npm run generate-icons
+# Generate icons using tools/create_icons.html
 ```
 
 ## 📄 License

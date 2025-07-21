@@ -5,8 +5,7 @@
   "main": "src/popup.js",
   "scripts": {
     "build": "echo 'Extension is ready to load in Chrome'",
-    "test": "echo 'Open chrome://extensions/ and load unpacked extension'",
-    "generate-icons": "node generate_icons.js"
+    "test": "echo 'Open chrome://extensions/ and load unpacked extension'"
   },
   "keywords": [
     "chrome-extension",
@@ -28,8 +27,5 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "devDependencies": {
-    "canvas": "^2.11.0"
   }
 } 
