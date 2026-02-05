@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Later Cleaner</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Watch Later Cleaner</h1>
+
+    <div id="status" class="status"></div>
+
+    <div id="not-on-playlist" class="warning hidden">
+      Please navigate to your <a href="https://www.youtube.com/playlist?list=WL" target="_blank">Watch Later playlist</a> first.
+    </div>
+
+    <div id="controls">
+      <button id="remove-watched" class="btn btn-primary">
+        Remove Watched Videos
+      </button>
+
+      <button id="remove-all" class="btn btn-danger">
+        Remove All Videos
+      </button>
+
+      <button id="stop" class="btn btn-stop hidden">
+        Stop
+      </button>
+    </div>
+
+    <div id="progress" class="progress hidden">
+      <div class="progress-text">Removed: <span id="progress-count">0</span> videos</div>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
