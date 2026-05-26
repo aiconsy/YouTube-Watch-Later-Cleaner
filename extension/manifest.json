@@ -1,19 +1,39 @@
 {
   "manifest_version": 3,
   "name": "YouTube Watch Later Cleaner",
-  "version": "0.1.0",
-  "description": "Clean up your YouTube Watch Later playlist by removing watched videos or clearing the list.",
+  "version": "1.0.0",
+  "description": "Clean up your YouTube Watch Later playlist — remove watched, old, or all videos. Export before clearing. Multi-language support.",
   "action": {
     "default_title": "Watch Later Cleaner",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
-  "permissions": ["activeTab"],
-  "host_permissions": ["https://www.youtube.com/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/playlist*"],
-      "js": ["contentScript.js"]
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
-

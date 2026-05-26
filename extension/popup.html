@@ -8,34 +8,107 @@
 </head>
 <body>
   <div class="container">
-    <h1>Watch Later Cleaner</h1>
+    <div class="header">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="128" height="128" rx="24" fill="#FF0000"/>
+          <polygon points="52,36 52,92 96,64" fill="#fff"/>
+        </svg>
+      </div>
+      <h1>Watch Later Cleaner</h1>
+      <span class="version">v1.0.0</span>
+    </div>
 
-    <div id="status" class="status"></div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
 
     <div id="not-on-playlist" class="warning hidden">
-      Please navigate to your <a href="https://www.youtube.com/playlist?list=WL" target="_blank">Watch Later playlist</a> first.
+      Navigate to your <a href="https://www.youtube.com/playlist?list=WL" id="open-playlist" target="_blank">Watch Later playlist</a> first.
+    </div>
+
+    <div id="playlist-stats" class="stats hidden">
+      <div class="stat-row">
+        <span class="stat-label">Videos in playlist</span>
+        <span id="stat-total" class="stat-value">—</span>
+      </div>
     </div>
 
     <div id="controls">
-      <button id="remove-watched" class="btn btn-primary">
-        Remove Watched Videos
+      <button id="remove-watched" class="btn btn-primary" aria-label="Remove watched videos from playlist">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.354 4.646a.5.5 0 010 .708l-4 4a.5.5 0 01-.708 0l-2-2a.5.5 0 01.708-.708L7 9.293l3.646-3.647a.5.5 0 01.708 0z"/>
+        </svg>
+        Remove Watched
       </button>
 
-      <button id="remove-all" class="btn btn-danger">
+      <button id="remove-old" class="btn btn-secondary" aria-label="Remove videos older than a date range">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M3.5 0a.5.5 0 01.5.5V1h8V.5a.5.5 0 011 0V1h1a2 2 0 012 2v11a2 2 0 01-2 2H2a2 2 0 01-2-2V3a2 2 0 012-2h1V.5a.5.5 0 01.5-.5zM1 4v10a1 1 0 001 1h12a1 1 0 001-1V4H1z"/>
+        </svg>
+        Remove Older Than
+      </button>
+
+      <div id="age-filter" class="age-filter hidden">
+        <label for="age-days">Remove videos added more than</label>
+        <div class="age-input-row">
+          <input type="number" id="age-days" min="1" max="3650" value="90" aria-label="Number of days">
+          <span>days ago</span>
+        </div>
+        <button id="confirm-age-remove" class="btn btn-warning btn-sm">Confirm Removal</button>
+        <button id="cancel-age-remove" class="btn btn-ghost btn-sm">Cancel</button>
+      </div>
+
+      <button id="remove-all" class="btn btn-danger" aria-label="Remove all videos from playlist">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M5.5 5.5A.5.5 0 016 6v6a.5.5 0 01-1 0V6a.5.5 0 01.5-.5zm2.5 0a.5.5 0 01.5.5v6a.5.5 0 01-1 0V6a.5.5 0 01.5-.5zm3 .5a.5.5 0 00-1 0v6a.5.5 0 001 0V6z"/>
+          <path fill-rule="evenodd" d="M14.5 3a1 1 0 01-1 1H13v9a2 2 0 01-2 2H5a2 2 0 01-2-2V4h-.5a1 1 0 01-1-1V2a1 1 0 011-1H5.5l1-1h3l1 1h2.5a1 1 0 011 1v1zM4.118 4L4 4.059V13a1 1 0 001 1h6a1 1 0 001-1V4.059L11.882 4H4.118z"/>
+        </svg>
         Remove All Videos
       </button>
 
-      <button id="stop" class="btn btn-stop hidden">
+      <div id="confirm-all" class="confirm-dialog hidden" role="alertdialog" aria-labelledby="confirm-title">
+        <p id="confirm-title" class="confirm-text">This will remove <strong>all</strong> videos from your Watch Later playlist. This cannot be undone.</p>
+        <div class="confirm-actions">
+          <button id="confirm-all-yes" class="btn btn-danger btn-sm">Yes, Remove All</button>
+          <button id="confirm-all-no" class="btn btn-ghost btn-sm">Cancel</button>
+        </div>
+        <label class="confirm-export">
+          <input type="checkbox" id="export-first" checked>
+          Export playlist data first
+        </label>
+      </div>
+
+      <button id="export-playlist" class="btn btn-tertiary" aria-label="Export playlist data as JSON">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M.5 9.9a.5.5 0 01.5.5v2.5a1 1 0 001 1h12a1 1 0 001-1v-2.5a.5.5 0 011 0v2.5a2 2 0 01-2 2H2a2 2 0 01-2-2v-2.5a.5.5 0 01.5-.5z"/>
+          <path d="M7.646 1.146a.5.5 0 01.708 0l3 3a.5.5 0 01-.708.708L8.5 3.707V10.5a.5.5 0 01-1 0V3.707L5.354 5.854a.5.5 0 11-.708-.708l3-3z"/>
+        </svg>
+        Export Playlist
+      </button>
+
+      <button id="stop" class="btn btn-stop hidden" aria-label="Stop current operation">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="3" y="3" width="10" height="10" rx="1"/>
+        </svg>
         Stop
       </button>
     </div>
 
-    <div id="progress" class="progress hidden">
-      <div class="progress-text">Removed: <span id="progress-count">0</span> videos</div>
+    <div id="progress" class="progress hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-header">
+        <span class="progress-text">Removed: <strong id="progress-count">0</strong> videos</span>
+        <span id="progress-eta" class="progress-eta"></span>
+      </div>
       <div class="progress-bar">
         <div id="progress-fill" class="progress-fill"></div>
       </div>
+      <div id="progress-rate" class="progress-rate"></div>
     </div>
+
+    <footer class="footer">
+      <a href="https://github.com/aiconsy/YouTube-Watch-Later-Cleaner" target="_blank" rel="noopener" class="footer-link">
+        v1.0.0 · GitHub
+      </a>
+    </footer>
   </div>
 
   <script src="popup.js"></script>
